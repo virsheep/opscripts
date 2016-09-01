@@ -1,0 +1,14 @@
+#!/bin/bash
+
+repo_path="/home/repos"
+rpm_path="/root/rpmbuild/RPMS/x86_64"
+
+
+Make_repo(){
+    rsync -az $rpm_path/* $repo_path/ --exclude=*debuginfo*
+    createrepo $repo_path
+}
+Main(){
+    Make_repo
+}
+Main

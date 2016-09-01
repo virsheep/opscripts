@@ -1,0 +1,5 @@
+#!/bin/bash
+/home/service/php/bin/phpize
+./configure --with-php-config=/home/service/php/bin/php-config
+make 
+make install
