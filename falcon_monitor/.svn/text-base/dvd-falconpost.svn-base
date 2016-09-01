@@ -1,0 +1,121 @@
+#!/bin/bash
+
+version=0.2
+base_path=$(cd $(dirname $0);pwd)
+args_array="metric m endpoint e countertype c step s value v tags t agent a "
+default_step=60
+args=$@
+tool_name=$0
+default_agent="127.0.0.1"
+
+Test_args(){
+	[[ "$args" =~ "--debug" ]] \
+		&& debug_flag=1
+
+	[ "$countertype" != "GAUGE" -a "$countertype" != "COUNTER" ] \
+		&&  echo "ArgsError : Countertype should only be GUAUGE or COUNTER" \
+		&& exit
+
+	[[  ! "$value" =~ ^-?[0-9]+([.][0-9]+)?$ ]] \
+			&& echo "ArgsError : Value should only be number type" \
+			&& exit
+
+	[[ "$metric" == "" ]] \
+		&& echo "ArgsError : Metirc should not be empty" \
+		&& exit
+
+}
+
+Debug_args_name(){
+
+	for i in $args_array;do
+		[ ${#i} -ne 1 ] \
+			&& echo $i"=\""$(eval echo \$$i)"\""
+	done
+
+}
+
+Test_help(){
+
+	help_info=$1
+        [ "$args" == "-h"  -o "$args" == "--help" ]\
+                && echo "$help_info" \
+                && exit
+
+}
+
+Post_data(){
+
+       eval $(echo "$args"|\
+                awk --re-interval  -vArgs_array="$args_array" \
+                        ' \
+                                function str_sort(str){
+                                        gsub(/["\047]/,"",str)
+                                        split(str,array,",")
+                                        for(;j++<asort(array);){
+                                                str_final=str_final?str_final","array[j]:array[j]
+                                        }
+                                        return str_final
+                                }
+                                BEGIN {
+                                        split(Args_array,arg_array," ")
+                                }
+                                {
+                                        for(;i++<length(arg_array);)
+                                        {
+                                                arg_flag[arg_array[i]]=arg_array[i++]
+                                                match($0,"(^| )-"arg_array[i]" *([^ -][^ ]*)",arg_v)
+
+                                                if(arg_array[i]=="t"){
+                                                        arg_value=str_sort(arg_v[2])
+                                                }
+                                                arg_value=arg_value?arg_value:arg_v[2]
+                                                print arg_flag[arg_array[i]]"=\""arg_value"\""
+                                                arg_value=""
+                                        }
+                                }
+                        '
+        )
+
+	step=${step:-$default_step}
+	endpoint=${endpoint:-$HOSTNAME}
+	timestamp=$(date +%s)
+	countertype=${countertype:-GAUGE}
+	agent=${agent:-$default_agent}
+
+	Test_args
+	[[ $debug_flag == 1 ]] \
+		&& Debug_args_name
+
+	status=$(curl -s -X POST -d '[{"metric":"'$metric'","endpoint":"'$endpoint'","timestamp":'$timestamp',"step":'$step',"value":'$value',"counterType":"'$countertype'","tags":"'$tags'"}]' http://$agent:1988/v1/push)
+
+	echo Status:$status
+}
+
+
+Main(){
+	Test_help "
+
+	${tool_name##*/} v$version
+	A simple tool for ops to post monitor data to falcon agent.
+
+	Arguments:
+		-h or --help 	Print Help ( this message ) and exit
+		-m		Metric ( required )
+		-v		Value ( required )
+		-c		Countertype ( default:GAUGE )
+		-s		Step ( default : 60 (s) )
+		-e		Endpoint ( default : \$HOSTNAME )
+		-t		Tags ( default : Null )
+		-a		Agentip ( default : 127.0.0.1 )
+
+	Usage:
+		${tool_name##*/} -m Metric -v Value -c Countertype -s Step \\
+			   -e Endpoint -t \"Tags\"
+
+
+	"
+
+	Post_data
+}
+Main

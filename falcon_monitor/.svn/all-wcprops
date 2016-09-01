@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor
+END
+dvd-falconpost
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor/dvd-falconpost
+END
+30_redis_collect.sh
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor/30_redis_collect.sh
+END
+30_tomcat_collect.sh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor/30_tomcat_collect.sh
+END
+30_mysqld_collect.sh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor/30_mysqld_collect.sh
+END
+30_phpfpm_collect.sh
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/code/!svn/ver/28307/opscripts/yangxu/falcon_monitor/30_phpfpm_collect.sh
+END
