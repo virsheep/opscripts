@@ -23,8 +23,7 @@ func falconPost(data string, agent string) (httpcode int, httpresp string, err e
 	resp, err := http.Post(api_url, "application/x-www-form-urlencoded", strings.NewReader(post_data))
 
 	if err != nil {
-		fmt.Println("Error:")
-		fmt.Println(err)
+		fmt.Printf("Error:\n%s\n", err)
 		return
 	}
 
@@ -48,7 +47,7 @@ func main() {
 	tags := flag.String("t", "", "tags")
 	value := flag.Float64("v", -0.000000001, "value")
 	agent := flag.String("a", "127.0.0.1", "agent http url")
-	data_mode := flag.Bool("data", false, "show data iin json")
+	data_mode := flag.Bool("data", false, "show data in json")
 	help_mode := flag.Bool("help", false, "show help info")
 
 	flag.Parse()
